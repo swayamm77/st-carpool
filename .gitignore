@@ -1,0 +1,18 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
