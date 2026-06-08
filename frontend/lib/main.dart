@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'ride_details_screen.dart';
+import 'requests_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +44,11 @@ class _RideListScreenState extends State<RideListScreen> {
       print(response.body);
 
       setState(() {
-        rides = jsonDecode(response.body);
+        rides = jsonDecode(response.body)
+        .where((ride) =>
+        ride["status"] == "active" &&
+        ride["availableSeats"] > 0)
+        .toList();
         isLoading = false;
       });
     } catch (e) {
@@ -81,6 +86,23 @@ class _RideListScreenState extends State<RideListScreen> {
     ),
       appBar: AppBar(
         title: const Text("ST Carpool"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.people),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const RequestsScreen(),
+                ),
+              );
+
+              if (result == true) {
+                fetchRides();
+              }
+            },
+          ),
+        ],
       ),
       body: isLoading
           ? const Center(

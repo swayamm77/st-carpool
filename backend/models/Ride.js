@@ -26,7 +26,7 @@ const rideSchema = new mongoose.Schema(
     availableSeats: {
       type: Number,
       required: true,
-      min: 1,
+      min: 0,
     },
 
     status: {
