@@ -16,7 +16,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
 
   Future<void> createRide() async {
     final response = await http.post(
-      Uri.parse("http://172.19.144.54:5000/api/rides"),
+      Uri.parse("http://192.168.29.23:5000/api/rides"),
       headers: {
         "Content-Type": "application/json",
       },

@@ -2,6 +2,7 @@ import 'create_ride_screen.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'ride_details_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,22 +32,29 @@ class _RideListScreenState extends State<RideListScreen> {
   bool isLoading = true;
 
   Future<void> fetchRides() async {
+    print("STARTING FETCH");
+
     try {
       final response = await http.get(
-        Uri.parse("http://172.19.144.54:5000/api/rides"),
+        Uri.parse("http://192.168.29.23:5000/api/rides"),
       );
 
-      if (response.statusCode == 200) {
-        setState(() {
-          rides = jsonDecode(response.body);
-          isLoading = false;
-        });
-      }
+      print("STATUS: ${response.statusCode}");
+      print(response.body);
+
+      setState(() {
+        rides = jsonDecode(response.body);
+        isLoading = false;
+      });
     } catch (e) {
+      print("ERROR:");
       print(e);
+
+      setState(() {
+        isLoading = false;
+      });
     }
   }
-
   @override
   void initState() {
     super.initState();
@@ -92,6 +100,16 @@ class _RideListScreenState extends State<RideListScreen> {
                     subtitle: Text(
                       "Seats: ${ride["availableSeats"]}",
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => RideDetailsScreen(
+                            ride: ride,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
