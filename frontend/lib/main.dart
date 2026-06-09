@@ -37,7 +37,7 @@ class _RideListScreenState extends State<RideListScreen> {
 
     try {
       final response = await http.get(
-        Uri.parse("http://192.168.29.23:5000/api/rides"),
+        Uri.parse("http://172.19.144.54:5000/api/rides"),
       );
 
       print("STATUS: ${response.statusCode}");

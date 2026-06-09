@@ -14,28 +14,42 @@ class _RequestsScreenState extends State<RequestsScreen> {
   bool isLoading = true;
 
   Future<void> fetchRequests() async {
-    try {
-      final response = await http.get(
-        Uri.parse("http://192.168.29.23:5000/api/requests"),
-      );
+  print("FETCHING REQUESTS");
 
-      if (response.statusCode == 200) {
-        setState(() {
-          requests = jsonDecode(response.body)
-          .where((request) => request["status"] == "pending")
-          .toList();
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      print(e);
-    }
+  try {
+    final response = await http.get(
+      Uri.parse("http://172.19.144.54:5000/api/requests"),
+    );
+
+    print("STATUS CODE: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
+    if (response.statusCode == 200) {
+  if (!mounted) return;
+
+  setState(() {
+    requests = jsonDecode(response.body)
+        .where((request) => request["status"] == "pending")
+        .toList();
+
+    isLoading = false;
+  });
+}
+  } catch (e) {
+    print("ERROR:");
+    print(e);
+
+    if (!mounted) return;
+
+setState(() {
+  isLoading = false;
+});
   }
-
+}
   Future<void> approveRequest(String requestId) async {
   final response = await http.patch(
     Uri.parse(
-      "http://192.168.29.23:5000/api/requests/$requestId",
+      "http://172.19.144.54:5000/api/requests/$requestId",
     ),
     headers: {
       "Content-Type": "application/json",

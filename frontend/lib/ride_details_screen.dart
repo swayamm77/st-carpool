@@ -12,7 +12,7 @@ class RideDetailsScreen extends StatelessWidget {
 
   Future<void> requestRide(BuildContext context) async {
     final response = await http.post(
-      Uri.parse("http://192.168.29.23:5000/api/requests"),
+      Uri.parse("http://172.19.144.54:5000/api/requests"),
       headers: {
         "Content-Type": "application/json",
       },
