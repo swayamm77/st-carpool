@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
+import 'current_user.dart';
 
 class RideDetailsScreen extends StatelessWidget {
   final Map ride;
@@ -21,7 +22,7 @@ class RideDetailsScreen extends StatelessWidget {
         "rideId": ride["_id"],
 
         // Rahul's ID for testing
-        "passengerId": "6a267a87333f6059220cbd62"
+        "passengerId": currentUser!["_id"]
       }),
     );
 

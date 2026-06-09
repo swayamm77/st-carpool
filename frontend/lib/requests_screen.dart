@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
+import 'current_user.dart';
 
 class RequestsScreen extends StatefulWidget {
   const RequestsScreen({super.key});
@@ -30,8 +31,10 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   setState(() {
     requests = jsonDecode(response.body)
-        .where((request) => request["status"] == "pending")
-        .toList();
+        .where((request) =>
+        request["status"] == "pending" &&
+        request["rideId"]["driverId"] == currentUser!["_id"])
+    .toList();
 
     isLoading = false;
   });

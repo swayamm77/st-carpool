@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'api_config.dart';
+import 'current_user.dart';
 
 class CreateRideScreen extends StatefulWidget {
   const CreateRideScreen({super.key});
@@ -22,7 +23,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
         "Content-Type": "application/json",
       },
       body: jsonEncode({
-        "driverId": "6a26530dc6b8712a70c76458",
+        "driverId": currentUser!["_id"],
         "source": sourceController.text,
         "destination": destinationController.text,
         "departureTime": DateTime.now().toIso8601String(),

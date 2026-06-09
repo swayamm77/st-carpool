@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'ride_details_screen.dart';
 import 'requests_screen.dart';
 import 'api_config.dart';
+import 'login_screen.dart';   
+import 'current_user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: RideListScreen(),
+      home: LoginScreen(),
     );
   }
 }
@@ -91,25 +93,43 @@ class _RideListScreenState extends State<RideListScreen> {
         child: const Icon(Icons.add),
     ),
       appBar: AppBar(
-        title: const Text("ST Carpool"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.people),
-            onPressed: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const RequestsScreen(),
-                ),
-              );
+  title: Text(
+    "ST Carpool - ${currentUser!["name"]}",
+  ),
+  actions: [
+    if (currentUser!["isDriver"] == true)
+      IconButton(
+        icon: const Icon(Icons.people),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const RequestsScreen(),
+            ),
+          );
 
-              if (result == true) {
-                fetchRides();
-              }
-            },
-          ),
-        ],
+          if (result == true) {
+            fetchRides();
+          }
+        },
       ),
+
+    IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () {
+        currentUser = null;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const LoginScreen(),
+          ),
+        );
+      },
+    ),
+  ],
+),
+        
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(),
