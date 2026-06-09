@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'ride_details_screen.dart';
 import 'requests_screen.dart';
+import 'api_config.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,33 +34,38 @@ class _RideListScreenState extends State<RideListScreen> {
   bool isLoading = true;
 
   Future<void> fetchRides() async {
-    print("STARTING FETCH");
+  print("STARTING FETCH");
 
-    try {
-      final response = await http.get(
-        Uri.parse("http://172.19.144.54:5000/api/rides"),
-      );
+  try {
+    final response = await http.get(
+      Uri.parse("${ApiConfig.baseUrl}/api/rides"),
+    );
 
-      print("STATUS: ${response.statusCode}");
-      print(response.body);
+    print("STATUS: ${response.statusCode}");
+    print(response.body);
 
-      setState(() {
-        rides = jsonDecode(response.body)
-        .where((ride) =>
-        ride["status"] == "active" &&
-        ride["availableSeats"] > 0)
-        .toList();
-        isLoading = false;
-      });
-    } catch (e) {
-      print("ERROR:");
-      print(e);
+    if (!mounted) return;
 
-      setState(() {
-        isLoading = false;
-      });
-    }
+    setState(() {
+      rides = jsonDecode(response.body)
+          .where((ride) =>
+              ride["status"] == "active" &&
+              ride["availableSeats"] > 0)
+          .toList();
+
+      isLoading = false;
+    });
+  } catch (e) {
+    print("ERROR:");
+    print(e);
+
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = false;
+    });
   }
+}
   @override
   void initState() {
     super.initState();

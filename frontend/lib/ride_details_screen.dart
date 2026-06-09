@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'api_config.dart';
 
 class RideDetailsScreen extends StatelessWidget {
   final Map ride;
@@ -12,7 +13,7 @@ class RideDetailsScreen extends StatelessWidget {
 
   Future<void> requestRide(BuildContext context) async {
     final response = await http.post(
-      Uri.parse("http://172.19.144.54:5000/api/requests"),
+      Uri.parse("${ApiConfig.baseUrl}/api/requests"),
       headers: {
         "Content-Type": "application/json",
       },

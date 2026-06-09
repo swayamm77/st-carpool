@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'api_config.dart';
 
 class RequestsScreen extends StatefulWidget {
   const RequestsScreen({super.key});
@@ -18,7 +19,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
 
   try {
     final response = await http.get(
-      Uri.parse("http://172.19.144.54:5000/api/requests"),
+      Uri.parse("${ApiConfig.baseUrl}/api/requests"),
     );
 
     print("STATUS CODE: ${response.statusCode}");
@@ -49,7 +50,7 @@ setState(() {
   Future<void> approveRequest(String requestId) async {
   final response = await http.patch(
     Uri.parse(
-      "http://172.19.144.54:5000/api/requests/$requestId",
+      "${ApiConfig.baseUrl}/api/requests/$requestId",
     ),
     headers: {
       "Content-Type": "application/json",

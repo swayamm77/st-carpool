@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'api_config.dart';
 
 class CreateRideScreen extends StatefulWidget {
   const CreateRideScreen({super.key});
@@ -16,7 +17,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
 
   Future<void> createRide() async {
     final response = await http.post(
-      Uri.parse("http://172.19.144.54:5000/api/rides"),
+      Uri.parse("${ApiConfig.baseUrl}/api/rides"),
       headers: {
         "Content-Type": "application/json",
       },
