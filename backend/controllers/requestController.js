@@ -3,7 +3,41 @@ const Ride = require("../models/Ride");
 
 const createRequest = async (req, res) => {
   try {
-    const request = await RideRequest.create(req.body);
+    const ride = await Ride.findById(req.body.rideId);
+
+    if (!ride) {
+      return res.status(404).json({
+        message: "Ride not found",
+      });
+    }
+
+    // Prevent requesting own ride
+    if (
+      ride.driverId.toString() ===
+      req.body.passengerId
+    ) {
+      return res.status(400).json({
+        message: "You cannot request your own ride",
+      });
+    }
+
+    // Prevent duplicate requests
+    const existingRequest =
+      await RideRequest.findOne({
+        rideId: req.body.rideId,
+        passengerId: req.body.passengerId,
+      });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        message:
+          "You have already requested this ride",
+      });
+    }
+
+    const request = await RideRequest.create(
+      req.body
+    );
 
     res.status(201).json(request);
   } catch (error) {

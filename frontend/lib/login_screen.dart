@@ -51,26 +51,68 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text("ST Carpool Login"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: "ST Email",
+      body: Center(
+  child: SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Card(
+        elevation: 6,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.directions_car,
+                size: 70,
               ),
-            ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
-            ElevatedButton(
-              onPressed: login,
-              child: const Text("Continue"),
-            ),
-          ],
+              const Text(
+                "ST Carpool",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Text(
+                "Internal Ride Sharing Platform",
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 24),
+
+              TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: "Email",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: login,
+                  child: const Text("Continue"),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    ),
+  ),
+),
     );
   }
 }

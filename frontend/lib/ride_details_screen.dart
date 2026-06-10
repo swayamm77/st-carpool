@@ -60,10 +60,21 @@ class RideDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: () => requestRide(context),
-              child: const Text("Request Ride"),
-            )
+            if (ride["driverId"]["_id"] != currentUser!["_id"])
+  SizedBox(
+    width: double.infinity,
+    child: ElevatedButton(
+      onPressed: () => requestRide(context),
+      child: const Text("Request Ride"),
+    ),
+  )
+else
+  const Text(
+    "This is your ride",
+    style: TextStyle(
+      fontWeight: FontWeight.bold,
+    ),
+  ),
           ],
         ),
       ),

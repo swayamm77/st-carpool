@@ -17,9 +17,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
+      home: const LoginScreen(),
     );
   }
 }
@@ -77,21 +80,25 @@ class _RideListScreenState extends State<RideListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const CreateRideScreen(),
-            ),
-          );
+      floatingActionButton:
+    currentUser!["isDriver"] == true
+        ? FloatingActionButton(
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CreateRideScreen(),
+                ),
+              );
 
-          if (result == true) {
-            fetchRides();
-          }
-        },
-        child: const Icon(Icons.add),
-    ),
+              if (result == true) {
+                fetchRides();
+              }
+            },
+            child: const Icon(Icons.add),
+          )
+        : null,
+        
       appBar: AppBar(
   title: Text(
     "ST Carpool - ${currentUser!["name"]}",
@@ -131,35 +138,91 @@ class _RideListScreenState extends State<RideListScreen> {
 ),
         
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
+    ? const Center(
+        child: CircularProgressIndicator(),
+      )
+    : rides.isEmpty
+        ? const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.directions_car_outlined,
+                  size: 80,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  "No rides available",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          )
+        : ListView.builder(
+          
               itemCount: rides.length,
               itemBuilder: (context, index) {
                 final ride = rides[index];
 
                 return Card(
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    title: Text(
-                      "${ride["source"]} → ${ride["destination"]}",
-                    ),
-                    subtitle: Text(
-                      "Seats: ${ride["availableSeats"]}",
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => RideDetailsScreen(
-                            ride: ride,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
+  margin: const EdgeInsets.symmetric(
+    horizontal: 12,
+    vertical: 8,
+  ),
+  elevation: 4,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+  child: ListTile(
+    contentPadding: const EdgeInsets.all(16),
+
+    title: Text(
+      ride["source"],
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+
+    subtitle: Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "📍 ${ride["destination"]}",
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            "💺 ${ride["availableSeats"]} Seats Available",
+          ),
+        ],
+      ),
+    ),
+
+    trailing: const Icon(
+      Icons.arrow_forward_ios,
+      size: 18,
+    ),
+
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => RideDetailsScreen(
+            ride: ride,
+          ),
+        ),
+      );
+    },
+  ),
+);
               },
             ),
     );
