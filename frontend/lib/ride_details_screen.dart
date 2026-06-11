@@ -5,7 +5,7 @@ import 'api_config.dart';
 import 'current_user.dart';
 import 'package:intl/intl.dart';
 
-class RideDetailsScreen extends StatelessWidget {
+class RideDetailsScreen extends StatefulWidget {
   final Map ride;
 
   const RideDetailsScreen({
@@ -13,10 +13,20 @@ class RideDetailsScreen extends StatelessWidget {
     required this.ride,
   });
 
+  @override
+  State<RideDetailsScreen> createState() =>
+      _RideDetailsScreenState();
+}
+
+class _RideDetailsScreenState
+    extends State<RideDetailsScreen> {
+
+      String? requestStatus;
+
   Future<void> deleteRide(BuildContext context) async {
   final response = await http.delete(
     Uri.parse(
-      "${ApiConfig.baseUrl}/api/rides/${ride["_id"]}",
+      "${ApiConfig.baseUrl}/api/rides/${widget.ride["_id"]}",
     ),
   );
 
@@ -31,6 +41,22 @@ class RideDetailsScreen extends StatelessWidget {
   }
 }
 
+Future<void> fetchRequestStatus() async {
+  final response = await http.get(
+    Uri.parse(
+      "${ApiConfig.baseUrl}/api/requests/check/${widget.ride["_id"]}/${currentUser!["_id"]}",
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+
+    setState(() {
+      requestStatus = data["status"];
+    });
+  }
+}
+
   Future<void> requestRide(BuildContext context) async {
     final response = await http.post(
       Uri.parse("${ApiConfig.baseUrl}/api/requests"),
@@ -38,7 +64,7 @@ class RideDetailsScreen extends StatelessWidget {
         "Content-Type": "application/json",
       },
       body: jsonEncode({
-        "rideId": ride["_id"],
+        "rideId": widget.ride["_id"],
 
         // Rahul's ID for testing
         "passengerId": currentUser!["_id"]
@@ -54,6 +80,10 @@ class RideDetailsScreen extends StatelessWidget {
       content: Text("Ride requested successfully"),
     ),
   );
+
+  setState(() {
+    requestStatus = "pending";
+  });
 } else {
   final data = jsonDecode(response.body);
 
@@ -66,9 +96,19 @@ class RideDetailsScreen extends StatelessWidget {
   }
 
   @override
+void initState() {
+  super.initState();
+
+  if (widget.ride["driverId"]["_id"] !=
+      currentUser!["_id"]) {
+    fetchRequestStatus();
+  }
+}
+
+  @override
   Widget build(BuildContext context) {
     final departureTime = DateTime.parse(
-  ride["departureTime"],
+  widget.ride["departureTime"],
 );
 
 final formattedTime =
@@ -87,7 +127,7 @@ final formattedTime =
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "${ride["source"]} → ${ride["destination"]}",
+              "${widget.ride["source"]} → ${widget.ride["destination"]}",
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -115,7 +155,7 @@ Text(
 const SizedBox(height: 10),
 
 Text(
-  "💺 Seats Available: ${ride["availableSeats"]}",
+  "💺 Seats Available: ${widget.ride["availableSeats"]}",
   style: const TextStyle(
     fontSize: 16,
   ),
@@ -123,7 +163,7 @@ Text(
 
             const SizedBox(height: 20),
 
-if (ride["driverId"]["_id"] == currentUser!["_id"])
+if (widget.ride["driverId"]["_id"] == currentUser!["_id"])
   SizedBox(
     width: double.infinity,
     child: ElevatedButton(
@@ -166,12 +206,45 @@ if (ride["driverId"]["_id"] == currentUser!["_id"])
 
             const SizedBox(height: 20),
 
-            if (ride["driverId"]["_id"] != currentUser!["_id"])
+            if (widget.ride["driverId"]["_id"] != currentUser!["_id"])
   SizedBox(
     width: double.infinity,
     child: ElevatedButton(
-      onPressed: () => requestRide(context),
-      child: const Text("Request Ride"),
+      onPressed:
+          requestStatus == null
+              ? () => requestRide(context)
+              : null,
+      style: ElevatedButton.styleFrom(
+  backgroundColor:
+      requestStatus == null
+          ? Colors.blue
+          : requestStatus == "pending"
+              ? Colors.orange
+              : requestStatus == "approved"
+                  ? Colors.green
+                  : Colors.red,
+
+  disabledBackgroundColor:
+      requestStatus == "pending"
+          ? Colors.orange
+          : requestStatus == "approved"
+              ? Colors.green
+              : requestStatus == "rejected"
+                  ? Colors.red
+                  : Colors.blue,
+
+  foregroundColor: Colors.white,
+  disabledForegroundColor: Colors.white,
+),  
+      child: Text(
+        requestStatus == null
+            ? "Request Ride"
+            : requestStatus == "pending"
+                ? "Requested"
+                : requestStatus == "approved"
+                    ? "Approved"
+                    : "Rejected",
+      ),
     ),
   )
 else
