@@ -123,8 +123,32 @@ if (!validStatuses.includes(status)) {
   }
 };
 
+const checkRequestStatus = async (req, res) => {
+  try {
+    const request = await RideRequest.findOne({
+      rideId: req.params.rideId,
+      passengerId: req.params.passengerId,
+    });
+
+    if (!request) {
+      return res.status(200).json({
+        status: null,
+      });
+    }
+
+    res.status(200).json({
+      status: request.status,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createRequest,
   getRequests,
   updateRequestStatus,
+  checkRequestStatus,
 };

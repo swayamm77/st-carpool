@@ -79,6 +79,7 @@ setState(() {
         ),
       ),
     );
+    Navigator.pop(context, true); 
   }
 }
 

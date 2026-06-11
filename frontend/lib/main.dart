@@ -7,6 +7,7 @@ import 'requests_screen.dart';
 import 'api_config.dart';
 import 'login_screen.dart';   
 import 'current_user.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -161,11 +162,22 @@ class _RideListScreenState extends State<RideListScreen> {
               ],
             ),
           )
-        : ListView.builder(
-          
-              itemCount: rides.length,
-              itemBuilder: (context, index) {
+        : RefreshIndicator(
+    onRefresh: fetchRides,
+    child: ListView.builder(
+      itemCount: rides.length,
+      itemBuilder: (context, index) {
                 final ride = rides[index];
+
+                final departureTime = DateTime.parse(
+  ride["departureTime"],
+);
+
+final formattedTime =
+    DateFormat("hh:mm a").format(departureTime);
+    final formattedDate =
+    DateFormat("dd MMM yyyy")
+        .format(departureTime);
 
                 return Card(
   margin: const EdgeInsets.symmetric(
@@ -200,8 +212,20 @@ class _RideListScreenState extends State<RideListScreen> {
           const SizedBox(height: 4),
 
           Text(
-            "💺 ${ride["availableSeats"]} Seats Available",
-          ),
+  "📅 $formattedDate",
+),
+
+const SizedBox(height: 4),
+
+Text(
+  "🕒 $formattedTime",
+),
+
+const SizedBox(height: 4),
+
+Text(
+  "💺 ${ride["availableSeats"]} Seats Available",
+),
         ],
       ),
     ),
@@ -211,20 +235,25 @@ class _RideListScreenState extends State<RideListScreen> {
       size: 18,
     ),
 
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => RideDetailsScreen(
-            ride: ride,
-          ),
-        ),
-      );
-    },
+    onTap: () async {
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => RideDetailsScreen(
+        ride: ride,
+      ),
+    ),
+  );
+
+  if (result == true) {
+    fetchRides();
+  }
+},
   ),
 );
               },
             ),
+        ),
     );
   }
 }
