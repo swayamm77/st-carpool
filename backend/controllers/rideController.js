@@ -24,7 +24,31 @@ const getRides = async (req, res) => {
   }
 };
 
+
+const deleteRide = async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+
+    if (!ride) {
+      return res.status(404).json({
+        message: "Ride not found",
+      });
+    }
+
+    await Ride.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Ride deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createRide,
   getRides,
+  deleteRide,
 };

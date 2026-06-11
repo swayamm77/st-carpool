@@ -26,13 +26,24 @@ class RideDetailsScreen extends StatelessWidget {
       }),
     );
 
+    print("STATUS CODE: ${response.statusCode}");
+    print("BODY: ${response.body}");
+
     if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Ride requested successfully"),
-        ),
-      );
-    }
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Ride requested successfully"),
+    ),
+  );
+} else {
+  final data = jsonDecode(response.body);
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(data["message"]),
+    ),
+  );
+}
   }
 
   @override
