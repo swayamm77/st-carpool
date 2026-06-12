@@ -8,6 +8,8 @@ import 'api_config.dart';
 import 'login_screen.dart';   
 import 'current_user.dart';
 import 'package:intl/intl.dart';
+import 'my_rides_screen.dart';
+import 'my_requests_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -121,6 +123,31 @@ class _RideListScreenState extends State<RideListScreen> {
           }
         },
       ),
+
+      IconButton(
+  icon: const Icon(Icons.directions_car),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const MyRidesScreen(),
+      ),
+    );
+  },
+),
+
+IconButton(
+  icon: const Icon(Icons.assignment),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const MyRequestsScreen(),
+      ),
+    );
+  },
+),
 
     IconButton(
       icon: const Icon(Icons.logout),

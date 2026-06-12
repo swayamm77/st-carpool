@@ -35,7 +35,13 @@ const deleteRide = async (req, res) => {
       });
     }
 
-    await Ride.findByIdAndDelete(req.params.id);
+    await RideRequest.deleteMany({
+      rideId: req.params.id,
+    });
+
+    await Ride.findByIdAndDelete(
+      req.params.id
+    );
 
     res.status(200).json({
       message: "Ride deleted successfully",
