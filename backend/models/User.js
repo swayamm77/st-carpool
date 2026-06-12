@@ -31,6 +31,26 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
+    vehicleRegistered: {
+  type: Boolean,
+  default: false,
+},
+
+vehicleNumber: {
+  type: String,
+  default: "",
+},
+
+vehicleModel: {
+  type: String,
+  default: "",
+},
+
+vehicleSeats: {
+  type: Number,
+  default: 0,
+},
+
     isDriver: {
       type: Boolean,
       default: false,

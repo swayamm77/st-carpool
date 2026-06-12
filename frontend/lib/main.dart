@@ -83,14 +83,15 @@ class _RideListScreenState extends State<RideListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton:
+  floatingActionButton:
     currentUser!["isDriver"] == true
         ? FloatingActionButton(
             onPressed: () async {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const CreateRideScreen(),
+                  builder: (_) =>
+                      const CreateRideScreen(),
                 ),
               );
 
@@ -101,68 +102,123 @@ class _RideListScreenState extends State<RideListScreen> {
             child: const Icon(Icons.add),
           )
         : null,
-        
-      appBar: AppBar(
-  title: Text(
-    "ST Carpool - ${currentUser!["name"]}",
-  ),
-  actions: [
-    if (currentUser!["isDriver"] == true)
-      IconButton(
-        icon: const Icon(Icons.people),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const RequestsScreen(),
-            ),
-          );
 
-          if (result == true) {
-            fetchRides();
-          }
-        },
-      ),
-
-      IconButton(
-  icon: const Icon(Icons.directions_car),
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const MyRidesScreen(),
-      ),
-    );
-  },
-),
-
-IconButton(
-  icon: const Icon(Icons.assignment),
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            const MyRequestsScreen(),
-      ),
-    );
-  },
-),
-
-    IconButton(
-      icon: const Icon(Icons.logout),
-      onPressed: () {
-        currentUser = null;
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
+  drawer: Drawer(
+    child: ListView(
+      padding: EdgeInsets.zero,
+      children: [
+        UserAccountsDrawerHeader(
+          accountName: Text(
+            currentUser!["name"],
           ),
-        );
-      },
+          accountEmail: Text(
+            currentUser!["email"] ?? "",
+          ),
+          currentAccountPicture:
+              const CircleAvatar(
+            child: Icon(Icons.person),
+          ),
+        ),
+
+        ListTile(
+          leading: const Icon(Icons.home),
+          title: const Text("Home"),
+          onTap: () {
+            Navigator.pop(context);
+          },
+        ),
+
+        ListTile(
+          leading: const Icon(
+            Icons.directions_car,
+          ),
+          title: const Text("My Rides"),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const MyRidesScreen(),
+              ),
+            );
+          },
+        ),
+
+        ListTile(
+          leading: const Icon(
+            Icons.assignment,
+          ),
+          title: const Text("My Requests"),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const MyRequestsScreen(),
+              ),
+            );
+          },
+        ),
+
+        if (currentUser!["isDriver"] == true)
+          ListTile(
+            leading: const Icon(
+              Icons.people,
+            ),
+            title: const Text(
+              "Ride Requests",
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      const RequestsScreen(),
+                ),
+              );
+            },
+          ),
+
+        const Divider(),
+
+        ListTile(
+          leading: const Icon(
+            Icons.logout,
+          ),
+          title: const Text("Logout"),
+          onTap: () {
+            currentUser = null;
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    const LoginScreen(),
+              ),
+            );
+          },
+        ),
+      ],
     ),
-  ],
+  ),
+
+  appBar: AppBar(
+  title: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        "Welcome",
+        style: TextStyle(fontSize: 12),
+      ),
+      Text(
+        currentUser!["name"],
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ],
+  ),
 ),
         
       body: isLoading
