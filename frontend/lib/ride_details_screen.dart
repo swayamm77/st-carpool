@@ -137,6 +137,33 @@ final formattedTime =
             const SizedBox(height: 20),
 
             Text(
+  "👤 Driver: ${widget.ride["driverId"]["name"]}",
+  style: const TextStyle(
+    fontSize: 16,
+  ),
+),
+
+const SizedBox(height: 10),
+
+Text(
+  "🚘 Vehicle: ${widget.ride["driverId"]["vehicleModel"]}",
+  style: const TextStyle(
+    fontSize: 16,
+  ),
+),
+
+const SizedBox(height: 10),
+
+Text(
+  "🔢 Number: ${widget.ride["driverId"]["vehicleNumber"]}",
+  style: const TextStyle(
+    fontSize: 16,
+  ),
+),
+
+const SizedBox(height: 20),
+
+            Text(
   "📅 Date: $formattedDate",
   style: const TextStyle(
     fontSize: 16,

@@ -10,6 +10,7 @@ import 'current_user.dart';
 import 'package:intl/intl.dart';
 import 'my_rides_screen.dart';
 import 'my_requests_screen.dart';
+import 'vehicle_registration_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -84,7 +85,7 @@ class _RideListScreenState extends State<RideListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
   floatingActionButton:
-    currentUser!["isDriver"] == true
+    currentUser!["vehicleRegistered"] == true
         ? FloatingActionButton(
             onPressed: () async {
               final result = await Navigator.push(
@@ -129,6 +130,29 @@ class _RideListScreenState extends State<RideListScreen> {
         ),
 
         ListTile(
+  leading: const Icon(
+    Icons.car_rental,
+  ),
+  title: const Text(
+    "My Vehicle",
+  ),
+  onTap: () async {
+    final result =
+        await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const VehicleRegistrationScreen(),
+      ),
+    );
+
+    if (result == true) {
+      setState(() {});
+    }
+  },
+),
+
+        ListTile(
           leading: const Icon(
             Icons.directions_car,
           ),
@@ -160,7 +184,7 @@ class _RideListScreenState extends State<RideListScreen> {
           },
         ),
 
-        if (currentUser!["isDriver"] == true)
+        if (currentUser!["vehicleRegistered"] == true)
           ListTile(
             leading: const Icon(
               Icons.people,
@@ -291,6 +315,19 @@ final formattedTime =
           Text(
             "📍 ${ride["destination"]}",
           ),
+
+          const SizedBox(height: 4),
+
+Text(
+  "👤 ${ride["driverId"]["name"]}",
+),
+
+const SizedBox(height: 4),
+
+Text(
+  "🚘 ${ride["driverId"]["vehicleModel"]}",
+),
+
 
           const SizedBox(height: 4),
 
