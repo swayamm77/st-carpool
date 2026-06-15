@@ -54,8 +54,33 @@ const deleteRide = async (req, res) => {
   }
 };
 
+const completeRide = async (req, res) => {
+  try {
+    const ride = await Ride.findById(
+      req.params.id
+    );
+
+    if (!ride) {
+      return res.status(404).json({
+        message: "Ride not found",
+      });
+    }
+
+    ride.status = "completed";
+
+    await ride.save();
+
+    res.status(200).json(ride);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createRide,
   getRides,
   deleteRide,
+  completeRide,
 };

@@ -21,6 +21,8 @@ class _VehicleRegistrationScreenState
     extends State<
         VehicleRegistrationScreen> {
 
+          bool isEditing = false;
+
   final vehicleNumberController =
       TextEditingController();
 
@@ -30,7 +32,48 @@ class _VehicleRegistrationScreenState
   final seatController =
       TextEditingController();
 
+      @override
+void initState() {
+  super.initState();
+
+  if (currentUser!["vehicleRegistered"] == true) {
+    vehicleNumberController.text =
+        currentUser!["vehicleNumber"];
+
+    vehicleModelController.text =
+        currentUser!["vehicleModel"];
+
+    seatController.text =
+        currentUser!["vehicleSeats"]
+            .toString();
+  }
+}
+
   Future<void> saveVehicle() async {
+
+    final vehicleNumber =
+    vehicleNumberController.text
+        .trim()
+        .toUpperCase();
+
+final vehicleRegex = RegExp(
+  r'^[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}$',
+);
+
+if (!vehicleRegex.hasMatch(
+  vehicleNumber,
+)) {
+  ScaffoldMessenger.of(context)
+      .showSnackBar(
+    const SnackBar(
+      content: Text(
+        "Enter a valid vehicle number",
+      ),
+    ),
+  );
+  return;
+} 
+
     final response = await http.patch(
       Uri.parse(
         "${ApiConfig.baseUrl}/api/users/${currentUser!["_id"]}/vehicle",
@@ -39,16 +82,19 @@ class _VehicleRegistrationScreenState
         "Content-Type":
             "application/json",
       },
+
       body: jsonEncode({
-        "vehicleNumber":
-            vehicleNumberController.text,
-        "vehicleModel":
-            vehicleModelController.text,
-        "vehicleSeats":
-            int.parse(
-              seatController.text,
-            ),
-      }),
+  "vehicleNumber":
+      vehicleNumber,
+
+  "vehicleModel":
+      vehicleModelController.text,
+
+  "vehicleSeats":
+      int.parse(
+        seatController.text,
+      ),
+}),
     );
 
     if (response.statusCode == 200) {
@@ -77,7 +123,7 @@ final hasVehicle =
         title:
             const Text("My Vehicle"),
       ),
-      body: hasVehicle
+      body: (hasVehicle && !isEditing)
     ? Padding(
         padding: const EdgeInsets.all(16),
         child: Card(
@@ -114,6 +160,19 @@ final hasVehicle =
                 Text(
                   "💺 Seats: ${currentUser!["vehicleSeats"]}",
                 ),
+                const SizedBox(height: 20),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      setState(() {
+        isEditing = true;
+      });
+    },
+    child: const Text("Edit Vehicle"),
+  ),
+),
               ],
             ),
           ),
@@ -165,9 +224,11 @@ final hasVehicle =
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: saveVehicle,
-                child: const Text(
-                  "Add Vehicle",
-                ),
+                child: Text(
+  hasVehicle
+      ? "Save Changes"
+      : "Add Vehicle",
+),
               ),
             ),
           ],

@@ -44,6 +44,27 @@ class _RideDetailsScreenState
   }
 }
 
+Future<void> completeRide() async {
+  final response = await http.patch(
+    Uri.parse(
+      "${ApiConfig.baseUrl}/api/rides/${widget.ride["_id"]}/complete",
+    ),
+  );
+
+  if (response.statusCode == 200) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Ride completed",
+        ),
+      ),
+    );
+
+    Navigator.pop(context, true);
+  }
+}
+
 Future<void> fetchRequestStatus() async {
   final response = await http.get(
     Uri.parse(
@@ -193,45 +214,86 @@ Text(
 
             const SizedBox(height: 20),
 
-if (widget.ride["driverId"]["_id"] == currentUser!["_id"])
-  SizedBox(
-    width: double.infinity,
-    child: ElevatedButton(
-      onPressed: () async {
-  final confirm = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text("Delete Ride"),
-      content: const Text(
-        "Are you sure you want to delete this ride?",
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context, false);
-          },
-          child: const Text("Cancel"),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context, true);
-          },
-          child: const Text("Delete"),
-        ),
-      ],
-    ),
-  );
+if (widget.ride["driverId"]["_id"] ==
+        currentUser!["_id"] &&
+    widget.ride["status"] != "completed")
+  Column(
+    children: [
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () async {
+            final confirm =
+                await showDialog<bool>(
+              context: context,
+              builder: (context) =>
+                  AlertDialog(
+                title: const Text(
+                  "Delete Ride",
+                ),
+                content: const Text(
+                  "Are you sure you want to delete this ride?",
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(
+                        context,
+                        false,
+                      );
+                    },
+                    child:
+                        const Text("Cancel"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(
+                        context,
+                        true,
+                      );
+                    },
+                    child:
+                        const Text("Delete"),
+                  ),
+                ],
+              ),
+            );
 
-  if (confirm == true) {
-    deleteRide(context);
-  }
-},
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
+            if (confirm == true) {
+              deleteRide(context);
+            }
+          },
+          style:
+              ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor:
+                Colors.white,
+          ),
+          child: const Text(
+            "Delete Ride",
+          ),
+        ),
       ),
-      child: const Text("Delete Ride"),
-    ),
+
+      const SizedBox(height: 10),
+
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: completeRide,
+          style:
+              ElevatedButton.styleFrom(
+            backgroundColor:
+                Colors.green,
+            foregroundColor:
+                Colors.white,
+          ),
+          child: const Text(
+            "Complete Ride",
+          ),
+        ),
+      ),
+    ],
   ),
 
             const SizedBox(height: 20),

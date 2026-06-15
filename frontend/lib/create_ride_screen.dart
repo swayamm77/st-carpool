@@ -103,6 +103,33 @@ if (departureDateTime.isAfter(
   return;
 }
 
+final requestedSeats =
+    int.tryParse(seatsController.text);
+
+if (requestedSeats == null ||
+    requestedSeats <= 0) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        "Please enter a valid seat count",
+      ),
+    ),
+  );
+  return;
+}
+
+if (requestedSeats >
+    currentUser!["vehicleSeats"]) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(
+        "Maximum ${currentUser!["vehicleSeats"]} seats allowed for your vehicle",
+      ),
+    ),
+  );
+  return;
+}
+
     final response = await http.post(
       Uri.parse("${ApiConfig.baseUrl}/api/rides"),
       headers: {
@@ -110,13 +137,13 @@ if (departureDateTime.isAfter(
       },
       body: jsonEncode({
         "driverId": currentUser!["_id"],
-        "source": sourceController.text,
+        "source": sourceController.text.trim(),
         "destination": "ST Greater Noida",
         "departureTime":
 
     departureDateTime.toIso8601String(),
 
-        "availableSeats": int.parse(seatsController.text),
+        "availableSeats": requestedSeats,
         "notes": ""
       }),
     );
@@ -162,13 +189,67 @@ const Text(
 ),
 
 const SizedBox(height: 24),
-            TextField(
-  controller: sourceController,
-  decoration: const InputDecoration(
-    labelText: "Pickup Location",
-    border: OutlineInputBorder(),
-    prefixIcon: Icon(Icons.location_on),
-  ),
+            Autocomplete<String>(
+  optionsBuilder: (
+    TextEditingValue textEditingValue,
+  ) {
+    const locations = [
+      "Pari Chowk",
+      "Knowledge Park",
+      "Purvanchal Heights",
+      "Purvanchal Royal City",
+      "Sector 137",
+      "Sector 142",
+      "Botanical Garden",
+      "Noida City Centre",
+      "Vaishali",
+      "Indirapuram",
+      "Dwarka",
+      "Sector 62",
+      "Sector 18",
+      "Electronic City",
+      "Alpha 1",
+      "Beta 1",
+      "Gamma 1",
+      "Delta 1",
+    ];
+
+    if (textEditingValue.text.isEmpty) {
+      return const Iterable<String>.empty();
+    }
+
+    return locations.where(
+      (location) => location
+          .toLowerCase()
+          .contains(
+            textEditingValue.text
+                .toLowerCase(),
+          ),
+    );
+  },
+
+  onSelected: (selection) {
+    sourceController.text = selection;
+  },
+
+  fieldViewBuilder: (
+    context,
+    controller,
+    focusNode,
+    onEditingComplete,
+  ) {
+    return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: const InputDecoration(
+        labelText: "Pickup Location",
+        border: OutlineInputBorder(),
+        prefixIcon: Icon(
+          Icons.location_on,
+        ),
+      ),
+    );
+  },
 ),
 
             const SizedBox(height: 16),
@@ -260,8 +341,8 @@ const SizedBox(height: 16),
             TextField(
   controller: seatsController,
   keyboardType: TextInputType.number,
-  decoration: const InputDecoration(
-    labelText: "Available Seats",
+  decoration: InputDecoration(
+    labelText: "Available Seats (Max ${currentUser!["vehicleSeats"]})",
     border: OutlineInputBorder(),
     prefixIcon: Icon(Icons.event_seat),
   ),
