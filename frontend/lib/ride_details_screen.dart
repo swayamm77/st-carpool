@@ -30,6 +30,9 @@ class _RideDetailsScreenState
     ),
   );
 
+  print("DELETE STATUS: ${response.statusCode}");
+  print("DELETE BODY: ${response.body}");
+
   if (response.statusCode == 200) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

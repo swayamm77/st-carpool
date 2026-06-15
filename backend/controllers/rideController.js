@@ -1,4 +1,5 @@
 const Ride = require("../models/Ride");
+const RideRequest = require("../models/RideRequest");
 
 const createRide = async (req, res) => {
   try {

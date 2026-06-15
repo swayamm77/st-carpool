@@ -25,7 +25,7 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
     initialDate: DateTime.now(),
     firstDate: DateTime.now(),
     lastDate: DateTime.now().add(
-      const Duration(days: 30),
+      const Duration(days: 7),
     ),
   );
 
@@ -66,6 +66,43 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
   );
   return;
 }
+
+final departureDateTime = DateTime(
+  selectedDate!.year,
+  selectedDate!.month,
+  selectedDate!.day,
+  selectedTime!.hour,
+  selectedTime!.minute,
+);
+
+final now = DateTime.now();
+
+if (departureDateTime.isBefore(
+  now.add(const Duration(hours: 1)),
+)) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        "Ride must be scheduled at least 1 hour in advance",
+      ),
+    ),
+  );
+  return;
+}
+
+if (departureDateTime.isAfter(
+  now.add(const Duration(days: 7)),
+)) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text(
+        "Ride can only be scheduled up to 7 days in advance",
+      ),
+    ),
+  );
+  return;
+}
+
     final response = await http.post(
       Uri.parse("${ApiConfig.baseUrl}/api/rides"),
       headers: {
@@ -75,13 +112,10 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
         "driverId": currentUser!["_id"],
         "source": sourceController.text,
         "destination": "ST Greater Noida",
-        "departureTime": DateTime(
-  selectedDate!.year,
-  selectedDate!.month,
-  selectedDate!.day,
-  selectedTime!.hour,
-  selectedTime!.minute,
-).toIso8601String(),
+        "departureTime":
+
+    departureDateTime.toIso8601String(),
+
         "availableSeats": int.parse(seatsController.text),
         "notes": ""
       }),
