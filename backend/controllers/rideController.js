@@ -20,15 +20,44 @@ const getRides = async (req, res) => {
     const now = new Date();
 
     for (const ride of rides) {
-      if (
-        ride.departureTime < now &&
-        ride.status !== "completed" &&
-        ride.status !== "expired"
-      ) {
-        ride.status = "expired";
-        await ride.save();
-      }
+
+      console.log("NOW:", new Date());
+console.log("DEPARTURE:", ride.departureTime);
+
+const oneHourBeforeDeparture =
+  new Date(
+    ride.departureTime.getTime() -
+    5 * 60 * 1000
+  );
+
+console.log(
+  "EXPIRY CHECK TIME:",
+  oneHourBeforeDeparture
+);
+
+
+  if (
+    new Date() >= oneHourBeforeDeparture &&
+    ride.status !== "completed" &&
+    ride.status !== "expired"
+  ) {
+    const approvedRequests =
+      await RideRequest.countDocuments({
+        rideId: ride._id,
+        status: "approved",
+      });
+
+      console.log(
+  "Approved Requests:",
+  approvedRequests
+);
+
+    if (approvedRequests === 0) {
+      ride.status = "expired";
+      await ride.save();
     }
+  }
+}
 
     const updatedRides =
       await Ride.find().populate(
