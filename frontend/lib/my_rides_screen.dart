@@ -11,10 +11,61 @@ class MyRidesScreen extends StatefulWidget {
   @override
   State<MyRidesScreen> createState() =>
       _MyRidesScreenState();
+
+      
 }
 
 class _MyRidesScreenState
     extends State<MyRidesScreen> {
+
+      Widget buildRideList(
+  List ridesList,
+) {
+  if (ridesList.isEmpty) {
+    return const Center(
+      child: Text(
+        "No rides found",
+      ),
+    );
+  }
+
+  return ListView.builder(
+    itemCount: ridesList.length,
+    itemBuilder: (context, index) {
+      final ride = ridesList[index];
+
+      return Card(
+        margin: const EdgeInsets.all(10),
+        child: ListTile(
+          title: Text(
+            "${ride["source"]} → ${ride["destination"]}",
+          ),
+
+          subtitle: Text(
+            "Seats: ${ride["availableSeats"]}",
+          ),
+
+          onTap: () async {
+            final result =
+                await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    RideDetailsScreen(
+                  ride: ride,
+                ),
+              ),
+            );
+
+            if (result == true) {
+              fetchMyRides();
+            }
+          },
+        ),
+      );
+    },
+  );
+}
 
   List rides = [];
   bool isLoading = true;
@@ -50,54 +101,58 @@ class _MyRidesScreenState
 
   @override
   Widget build(BuildContext context) {
+
+    final activeRides = rides.where(
+  (ride) =>
+      ride["status"] == "active" ||
+      ride["status"] == "full",
+).toList();
+
+final completedRides = rides.where(
+  (ride) =>
+      ride["status"] == "completed",
+).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("My Rides"),
       ),
-      body: isLoading
-          ? const Center(
-              child:
-                  CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: rides.length,
-              itemBuilder:
-                  (context, index) {
-
-                final ride = rides[index];
-
-                return Card(
-                  margin:
-                      const EdgeInsets.all(
-                    10,
-                  ),
-                  child: ListTile(
-                    title: Text(
-  "${ride["source"]} → ${ride["destination"]}",
-),
-
-subtitle: Text(
-  "Seats: ${ride["availableSeats"]}",
-),
-
-onTap: () async {
-  final result = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => RideDetailsScreen(
-        ride: ride,
-      ),
-    ),
-  );
-
-  if (result == true) {
-    fetchMyRides();
-  }
-},
-                  ),
-                );
-              },
+body: isLoading
+    ? const Center(
+        child:
+            CircularProgressIndicator(),
+      )
+    : DefaultTabController(
+        length: 2,
+        child: Column(
+          children: [
+            const TabBar(
+              tabs: [
+                Tab(
+                  text: "Active",
+                ),
+                Tab(
+                  text: "Completed",
+                ),
+              ],
             ),
+
+            Expanded(
+              child: TabBarView(
+                children: [
+                  buildRideList(
+                    activeRides,
+                  ),
+
+                  buildRideList(
+                    completedRides,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

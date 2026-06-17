@@ -15,9 +15,29 @@ const createRide = async (req, res) => {
 
 const getRides = async (req, res) => {
   try {
-    const rides = await Ride.find().populate("driverId");
+    const rides = await Ride.find();
 
-    res.status(200).json(rides);
+    const now = new Date();
+
+    for (const ride of rides) {
+      if (
+        ride.departureTime < now &&
+        ride.status !== "completed" &&
+        ride.status !== "expired"
+      ) {
+        ride.status = "expired";
+        await ride.save();
+      }
+    }
+
+    const updatedRides =
+      await Ride.find().populate(
+        "driverId"
+      );
+
+    res.status(200).json(
+      updatedRides
+    );
   } catch (error) {
     res.status(500).json({
       message: error.message,
