@@ -50,21 +50,21 @@ const createRequest = async (req, res) => {
 const getRequests = async (req, res) => {
   try {
     const requests = await RideRequest.find()
-      .populate({
-        path: "rideId",
-        populate: {
-          path: "driverId",
-        },
-      })
-      .populate("passengerId");
+  .populate({
+    path: "rideId",
+    populate: {
+      path: "driverId",
+    },
+  })
+  .populate("passengerId");
 
-    res.status(200).json(requests);
-  } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
-  }
-};
+console.log(
+  JSON.stringify(
+    requests[0],
+    null,
+    2
+  )
+);
 
 const updateRequestStatus = async (req, res) => {
   try {
