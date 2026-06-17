@@ -31,7 +31,7 @@ class _MyRequestsScreenState
 
   final allRequests =
       jsonDecode(response.body);
-
+print(jsonEncode(allRequests));
       setState(() {
         requests = allRequests.where(
   (request) =>
@@ -84,6 +84,8 @@ class _MyRequestsScreenState
                 final request =
                     requests[index];
 
+                    print(jsonEncode(request));
+
                 return Card(
                   margin:
                       const EdgeInsets.all(
@@ -104,15 +106,19 @@ class _MyRequestsScreenState
   children: [
     const SizedBox(height: 6),
 
-    Text(
-      "👤 Driver: ${request["rideId"]["driverId"]["name"]}",
-    ),
+    // Text(
+    //   "👤 Driver: ${request["rideId"]["driverId"]["name"]}",
+    // ),
 
-    const SizedBox(height: 4),
+    // const SizedBox(height: 4),
+
+    // Text(
+    //   "🚘 ${request["rideId"]["driverId"]["vehicleModel"]}",
+    // ),
 
     Text(
-      "🚘 ${request["rideId"]["driverId"]["vehicleModel"]}",
-    ),
+  "Driver Data: ${request["rideId"]["driverId"]}",
+),
 
     const SizedBox(height: 4),
 

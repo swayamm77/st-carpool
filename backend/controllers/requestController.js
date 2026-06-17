@@ -47,14 +47,16 @@ const createRequest = async (req, res) => {
   }
 };
 
-const requests = await RideRequest.find()
-  .populate({
-    path: "rideId",
-    populate: {
-      path: "driverId",
-    },
-  })
-  .populate("passengerId");
+const getRequests = async (req, res) => {
+  try {
+    const requests = await RideRequest.find()
+      .populate({
+        path: "rideId",
+        populate: {
+          path: "driverId",
+        },
+      })
+      .populate("passengerId");
 
     res.status(200).json(requests);
   } catch (error) {

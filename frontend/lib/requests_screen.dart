@@ -141,11 +141,17 @@ setState(() {
       children: [
         Text(
           "👤 ${request["passengerId"]["name"]}",
+          
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(height: 4),
+
+Text(
+  "📧 ${request["passengerId"]["email"]}",
+),
 
         const SizedBox(height: 8),
 
@@ -155,9 +161,22 @@ setState(() {
 
         const SizedBox(height: 4),
 
-        Text(
-          "Status: ${request["status"]}",
-        ),
+        Chip(
+  label: Text(
+    request["status"]
+        .toUpperCase(),
+    style: const TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  backgroundColor:
+      request["status"] == "approved"
+          ? Colors.green
+          : request["status"] == "rejected"
+              ? Colors.red
+              : Colors.orange,
+),
 
         const SizedBox(height: 12),
 
