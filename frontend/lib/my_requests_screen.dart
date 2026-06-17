@@ -117,7 +117,19 @@ print(jsonEncode(allRequests));
     // ),
 
     Text(
-  "Driver Data: ${request["rideId"]["driverId"]}",
+  "👤 Driver: ${request["rideId"]["driverId"]["name"]}",
+),
+
+const SizedBox(height: 4),
+
+Text(
+  "🚘 ${request["rideId"]["driverId"]["vehicleModel"]}",
+),
+
+const SizedBox(height: 4),
+
+Text(
+  "🔢 ${request["rideId"]["driverId"]["vehicleNumber"]}",
 ),
 
     const SizedBox(height: 4),

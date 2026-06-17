@@ -21,19 +21,11 @@ const getRides = async (req, res) => {
 
     for (const ride of rides) {
 
-      console.log("NOW:", new Date());
-console.log("DEPARTURE:", ride.departureTime);
-
 const oneHourBeforeDeparture =
   new Date(
     ride.departureTime.getTime() -
     5 * 60 * 1000
   );
-
-console.log(
-  "EXPIRY CHECK TIME:",
-  oneHourBeforeDeparture
-);
 
 
   if (
@@ -47,12 +39,10 @@ console.log(
         status: "approved",
       });
 
-      console.log(
-  "Approved Requests:",
-  approvedRequests
-);
-
     if (approvedRequests === 0) {
+      console.log(
+  `Ride expired: ${ride.source}`
+);
       ride.status = "expired";
       await ride.save();
     }
