@@ -91,23 +91,52 @@ class _MyRequestsScreenState
                   ),
                   child: ListTile(
                     title: Text(
-                      request["rideId"]
-                          ["source"],
-                    ),
+  "${request["rideId"]["source"]} → ${request["rideId"]["destination"]}",
+  style: const TextStyle(
+    fontWeight: FontWeight.bold,
+  ),
+),
 
-                    subtitle: Text(
-                      request["status"],
-                    ),
+                    subtitle: Column(
+  crossAxisAlignment:
+      CrossAxisAlignment.start,
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    const SizedBox(height: 6),
+
+    Text(
+      "👤 Driver: ${request["rideId"]["driverId"]["name"]}",
+    ),
+
+    const SizedBox(height: 4),
+
+    Text(
+      "🚘 ${request["rideId"]["driverId"]["vehicleModel"]}",
+    ),
+
+    const SizedBox(height: 4),
+
+    Text(
+      "💺 Seats: ${request["rideId"]["availableSeats"]}",
+    ),
+  ],
+),
 
                     trailing: Chip(
-                      label: Text(
-                        request["status"],
-                      ),
-                      backgroundColor:
-                          getStatusColor(
-                        request["status"],
-                      ),
-                    ),
+  label: Text(
+    request["status"]
+        .toUpperCase(),
+    style: const TextStyle(
+      color: Colors.white,
+      fontWeight:
+          FontWeight.bold,
+    ),
+  ),
+  backgroundColor:
+      getStatusColor(
+    request["status"],
+  ),
+),
                   ),
                 );
               },

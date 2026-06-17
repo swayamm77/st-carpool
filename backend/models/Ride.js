@@ -37,7 +37,7 @@ const rideSchema = new mongoose.Schema(
   "completed",
   "expired",
   "cancelled"
-]
+],
       default: "active",
     },
 
