@@ -57,15 +57,6 @@ const getRequests = async (req, res) => {
         },
       })
       .populate("passengerId");
-
-    console.log(
-      JSON.stringify(
-        requests[0],
-        null,
-        2
-      )
-    );
-
     res.status(200).json(requests);
   } catch (error) {
     res.status(500).json({

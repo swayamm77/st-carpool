@@ -14,7 +14,6 @@ const createRide = async (req, res) => {
 };
 
 const getRides = async (req, res) => {
-  console.log("GET RIDES HIT");
   try {
     const rides = await Ride.find();
 
@@ -25,7 +24,7 @@ const getRides = async (req, res) => {
 const oneHourBeforeDeparture =
   new Date(
     ride.departureTime.getTime() -
-    5 * 60 * 1000
+    60 * 60 * 1000
   );
 
 
@@ -41,9 +40,6 @@ const oneHourBeforeDeparture =
       });
 
     if (approvedRequests === 0) {
-      console.log(
-  `Ride expired: ${ride.source}`
-);
       ride.status = "expired";
       await ride.save();
     }
