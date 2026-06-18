@@ -14,6 +14,7 @@ const createRide = async (req, res) => {
 };
 
 const getRides = async (req, res) => {
+  console.log("GET RIDES HIT");
   try {
     const rides = await Ride.find();
 
