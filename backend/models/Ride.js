@@ -9,14 +9,22 @@ const rideSchema = new mongoose.Schema(
     },
 
     source: {
-      type: String,
-      required: true,
-    },
+  type: String,
+  required: true,
+},
 
-    destination: {
-      type: String,
-      required: true,
-    },
+sourceLat: {
+  type: Number,
+},
+
+sourceLng: {
+  type: Number,
+},
+
+destination: {
+  type: String,
+  required: true,
+},
 
     departureTime: {
       type: Date,

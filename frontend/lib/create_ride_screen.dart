@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'api_config.dart';
 import 'current_user.dart';
 import 'package:intl/intl.dart';
+import 'ola_maps_service.dart';
 
 class CreateRideScreen extends StatefulWidget {
   const CreateRideScreen({super.key});
@@ -13,8 +14,15 @@ class CreateRideScreen extends StatefulWidget {
 }
 
 class _CreateRideScreenState extends State<CreateRideScreen> {
+
   final sourceController = TextEditingController();
   final seatsController = TextEditingController();
+
+double? selectedLat;
+double? selectedLng;
+
+List<dynamic> suggestions = [];
+bool isSearching = false;
 
   TimeOfDay? selectedTime;
   DateTime? selectedDate;
@@ -47,6 +55,31 @@ class _CreateRideScreenState extends State<CreateRideScreen> {
       selectedTime = time;
     });
   }
+}
+
+Future<void> searchLocation(
+  String query,
+) async {
+  if (query.isEmpty) {
+    setState(() {
+      suggestions = [];
+    });
+    return;
+  }
+
+  setState(() {
+    isSearching = true;
+  });
+
+  final results =
+      await OlaMapsService.searchPlaces(
+    query,
+  );
+
+  setState(() {
+    suggestions = results;
+    isSearching = false;
+  });
 }
 
   Future<void> createRide() async {
@@ -130,23 +163,38 @@ if (requestedSeats >
   return;
 }
 
+print("===============");
+print("SOURCE: ${sourceController.text}");
+print("LAT: $selectedLat");
+print("LNG: $selectedLng");
+print("===============");
+
     final response = await http.post(
       Uri.parse("${ApiConfig.baseUrl}/api/rides"),
       headers: {
         "Content-Type": "application/json",
       },
       body: jsonEncode({
-        "driverId": currentUser!["_id"],
-        "source": sourceController.text.trim(),
-        "destination": "ST Greater Noida",
-        "departureTime":
+  "driverId": currentUser!["_id"],
+  "source": sourceController.text.trim(),
 
-    departureDateTime.toIso8601String(),
+  "sourceLat": selectedLat,
+  "sourceLng": selectedLng,
 
-        "availableSeats": requestedSeats,
-        "notes": ""
-      }),
+  "destination": "ST Greater Noida",
+
+  "departureTime":
+      departureDateTime
+          .toIso8601String(),
+
+  "availableSeats":
+      requestedSeats,
+
+  "notes": ""
+}),
     );
+
+    print(response.body);
 
     if (response.statusCode == 201) {
       Navigator.pop(context, true);
@@ -189,58 +237,11 @@ const Text(
 ),
 
 const SizedBox(height: 24),
-            Autocomplete<String>(
-  optionsBuilder: (
-    TextEditingValue textEditingValue,
-  ) {
-    const locations = [
-      "Pari Chowk",
-      "Knowledge Park",
-      "Purvanchal Heights",
-      "Purvanchal Royal City",
-      "Sector 137",
-      "Sector 142",
-      "Botanical Garden",
-      "Noida City Centre",
-      "Vaishali",
-      "Indirapuram",
-      "Dwarka",
-      "Sector 62",
-      "Sector 18",
-      "Electronic City",
-      "Alpha 1",
-      "Beta 1",
-      "Gamma 1",
-      "Delta 1",
-    ];
+Column(
+  children: [
 
-    if (textEditingValue.text.isEmpty) {
-      return const Iterable<String>.empty();
-    }
-
-    return locations.where(
-      (location) => location
-          .toLowerCase()
-          .contains(
-            textEditingValue.text
-                .toLowerCase(),
-          ),
-    );
-  },
-
-  onSelected: (selection) {
-    sourceController.text = selection;
-  },
-
-  fieldViewBuilder: (
-    context,
-    controller,
-    focusNode,
-    onEditingComplete,
-  ) {
-    return TextField(
-      controller: controller,
-      focusNode: focusNode,
+    TextField(
+      controller: sourceController,
       decoration: const InputDecoration(
         labelText: "Pickup Location",
         border: OutlineInputBorder(),
@@ -248,10 +249,80 @@ const SizedBox(height: 24),
           Icons.location_on,
         ),
       ),
-    );
-  },
-),
+      onChanged: searchLocation,
+    ),
 
+    if (isSearching)
+      const Padding(
+        padding: EdgeInsets.all(8),
+        child:
+            CircularProgressIndicator(),
+      ),
+
+    if (suggestions.isNotEmpty)
+      Container(
+        margin:
+            const EdgeInsets.only(
+          top: 8,
+        ),
+        constraints:
+            const BoxConstraints(
+          maxHeight: 220,
+        ),
+        decoration:
+            BoxDecoration(
+          border: Border.all(
+            color: Colors.grey,
+          ),
+          borderRadius:
+              BorderRadius.circular(
+            8,
+          ),
+        ),
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount:
+              suggestions.length,
+          itemBuilder:
+              (context, index) {
+            return ListTile(
+              leading: const Icon(
+                Icons.place,
+              ),
+              title: Text(
+                suggestions[index]["description"],
+                ),
+              onTap: () {
+
+  sourceController.text =
+      suggestions[index]["description"];
+
+  selectedLat =
+      suggestions[index]["geometry"]
+          ["location"]["lat"];
+
+  selectedLng =
+      suggestions[index]["geometry"]
+          ["location"]["lng"];
+
+  setState(() {
+    suggestions = [];
+  });
+
+  print(
+    "LAT: $selectedLat"
+  );
+
+  print(
+    "LNG: $selectedLng"
+  );
+},
+            );
+          },
+        ),
+      ),
+  ],
+),
             const SizedBox(height: 16),
 
 
