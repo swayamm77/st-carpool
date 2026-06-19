@@ -6,6 +6,9 @@ const userRoutes = require("./routes/userRoutes");
 const rideRoutes = require("./routes/rideRoutes");
 const requestRoutes = require("./routes/requestRoutes");
 
+const addressRoutes =
+  require("./routes/addressRoutes");
+
 dotenv.config();
 
 connectDB();
@@ -17,6 +20,10 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 app.use("/api/rides", rideRoutes);
 app.use("/api/requests", requestRoutes);
+app.use(
+  "/api/addresses",
+  addressRoutes
+);
 
 app.get("/", (req, res) => {
   res.send("ST Carpool Backend Running");
