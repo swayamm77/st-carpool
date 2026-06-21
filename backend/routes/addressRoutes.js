@@ -3,6 +3,7 @@ const express = require("express");
 const {
   createAddress,
   getAddresses,
+  deleteAddress,
 } = require(
   "../controllers/addressController"
 );
@@ -18,5 +19,7 @@ router.get(
   "/:userId",
   getAddresses
 );
+
+router.delete("/:id", deleteAddress);
 
 module.exports = router;

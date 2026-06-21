@@ -36,7 +36,28 @@ const getAddresses = async (
   }
 };
 
+const deleteAddress = async (
+  req,
+  res
+) => {
+  try {
+    await Address.findByIdAndDelete(
+      req.params.id
+    );
+
+    res.status(200).json({
+      message:
+          "Address deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAddress,
   getAddresses,
+  deleteAddress,
 };

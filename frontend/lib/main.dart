@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'my_rides_screen.dart';
 import 'my_requests_screen.dart';
 import 'vehicle_registration_screen.dart';
+import 'add_address_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -149,6 +150,24 @@ class _RideListScreenState extends State<RideListScreen> {
     if (result == true) {
       setState(() {});
     }
+  },
+),
+
+ListTile(
+  leading: const Icon(
+    Icons.location_on,
+  ),
+  title: const Text(
+    "My Addresses",
+  ),
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            const AddAddressScreen(),
+      ),
+    );
   },
 ),
 
@@ -376,4 +395,4 @@ Text(
         ),
     );
   }
-}
+} 
