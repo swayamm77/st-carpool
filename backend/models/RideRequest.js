@@ -14,11 +14,24 @@ const rideRequestSchema = new mongoose.Schema(
       required: true,
     },
 
+    pickupAddress: {
+  type: String,
+},
+
+pickupLat: {
+  type: Number,
+},
+
+pickupLng: {
+  type: Number,
+},
+
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    
   },
   {
     timestamps: true,

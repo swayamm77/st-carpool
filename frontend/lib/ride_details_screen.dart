@@ -22,6 +22,121 @@ class _RideDetailsScreenState
     extends State<RideDetailsScreen> {
 
       String? requestStatus;
+      List addresses = [];
+      Map? selectedAddress;
+
+      Future<void> fetchAddresses() async {
+
+  final response = await http.get(
+    Uri.parse(
+      "${ApiConfig.baseUrl}/api/addresses/${currentUser!["_id"]}",
+    ),
+  );
+
+  if (response.statusCode == 200) {
+
+    setState(() {
+      addresses =
+          jsonDecode(response.body);
+    });
+  }
+}
+
+Future<void> showAddressDialog() async {
+
+  selectedAddress = addresses.first;
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+
+      return StatefulBuilder(
+        builder: (
+          context,
+          dialogSetState,
+        ) {
+
+          return AlertDialog(
+            title: const Text(
+              "Select Pickup Location",
+            ),
+
+            content: SizedBox(
+              width: double.maxFinite,
+
+              child: ListView.builder(
+                shrinkWrap: true,
+
+                itemCount:
+                    addresses.length,
+
+                itemBuilder:
+                    (context, index) {
+
+                  final address =
+                      addresses[index];
+
+                  return RadioListTile(
+                    value: address,
+                    groupValue:
+                        selectedAddress,
+
+                    title: Text(
+                      address["name"],
+                    ),
+
+                    subtitle: Text(
+                      address["address"],
+                    ),
+
+                    onChanged: (value) {
+
+                      dialogSetState(() {
+
+                        selectedAddress =
+                            value;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+
+            actions: [
+
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(
+                    context,
+                  );
+                },
+                child: const Text(
+                  "Cancel",
+                ),
+              ),
+
+              ElevatedButton(
+                onPressed: () {
+
+                  Navigator.pop(
+                    context,
+                  );
+
+                  requestRide(
+                    this.context,
+                  );
+                },
+                child: const Text(
+                  "Request",
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
 
   Future<void> deleteRide(BuildContext context) async {
   final response = await http.delete(
@@ -88,11 +203,20 @@ Future<void> fetchRequestStatus() async {
         "Content-Type": "application/json",
       },
       body: jsonEncode({
-        "rideId": widget.ride["_id"],
+  "rideId": widget.ride["_id"],
 
-        // Rahul's ID for testing
-        "passengerId": currentUser!["_id"]
-      }),
+  "passengerId":
+      currentUser!["_id"],
+
+  "pickupAddress":
+      selectedAddress!["address"],
+
+  "pickupLat":
+      selectedAddress!["lat"],
+
+  "pickupLng":
+      selectedAddress!["lng"],
+}),
     );
 
     print("STATUS CODE: ${response.statusCode}");
@@ -125,7 +249,10 @@ void initState() {
 
   if (widget.ride["driverId"]["_id"] !=
       currentUser!["_id"]) {
+
     fetchRequestStatus();
+
+    fetchAddresses();
   }
 }
 
@@ -303,9 +430,27 @@ if (widget.ride["driverId"]["_id"] ==
     width: double.infinity,
     child: ElevatedButton(
       onPressed:
-          requestStatus == null
-              ? () => requestRide(context)
-              : null,
+    requestStatus == null
+        ? () async {
+
+            if (addresses.isEmpty) {
+
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    "Please add an address first",
+                  ),
+                ),
+              );
+
+              return;
+            }
+
+            await showAddressDialog();
+          }
+        : null,
+
       style: ElevatedButton.styleFrom(
   backgroundColor:
       requestStatus == null
